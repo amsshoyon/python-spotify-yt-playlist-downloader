@@ -1,21 +1,25 @@
 import os
-import spotdl
 import re
-import subprocess
 
-def download_playlist(playlist_url):
-    deault_playlist_name = playlist_name or re.search(r"(?<=playlist/)([A-Za-z0-9_-]+)", playlist_url).group(0)
-    
-    download_folder = f"downloads/{playlist_name}"
 
-    if not os.path.exists(download_folder):
-        os.makedirs(download_folder)
+class SpotifyPlaylistDownloader:
+    def __init__(self, base_download_path, playlist_url, playlist_name):
+        self.base_folder = os.path.join(base_download_path, "spotify")
+        self.playlist_url = playlist_url
+        self.playlist_name = playlist_name
 
-    print(f"Downloading playlist from: {playlist_url}")
-    
-    spotdl_command = f"spotdl {playlist_url} --output \"{download_folder}/%(title)s.%(ext)s\""
-    os.system(spotdl_command)
+    def get_playlist_name(self):
+        return self.playlist_name or re.search(r"(?<=playlist/)([A-Za-z0-9_-]+)", self.playlist_url).group(0)
 
-playlist_url = input("Enter the Spotify playlist URL: ")
-playlist_name = input("Enter the desired name for playlist: ")
-download_playlist(playlist_url)
+    def get_download_path(self):
+        playlist_name = self.get_playlist_name()
+        download_folder = os.path.join(self.base_folder, playlist_name)
+        os.makedirs(download_folder, exist_ok=True)
+        return download_folder
+
+    def download_playlist(self):
+        download_path = self.get_download_path()
+        print(f"Downloading playlist to: {download_path}")
+        spotdl_command = f'spotdl {self.playlist_url} --output "{download_path}"'
+        os.system(spotdl_command)
+        print(f"Task Completed.")

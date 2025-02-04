@@ -1,2 +1,4 @@
 spotdl
 ffmpeg-python
+yt-dlp
+python-dotenv
